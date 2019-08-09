@@ -1,0 +1,288 @@
+<html>
+<head>
+    <title>Настройки ReApi</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="format-detection" content="telephone=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <style>
+        html, body {
+            margin: 0px;
+            background: #E8EDEE;
+            color: #222;
+            font-family: "RobotoDraft", "Roboto", sans-serif;
+        }
+
+        .section {
+            background: #fff;
+            width: 100%;
+            box-shadow: 1px 0px 5px -3px #000;
+            margin-bottom: 5px;
+            padding: 0px;
+        }
+
+        .block {
+            padding: 16px;
+            font-size: 18px;
+        }
+
+        .block + .block {
+            border-top: 1px solid #ECECEC;
+        }
+
+        h1 {
+            font-size: 16px;
+            color: #4F80AE;
+            padding: 16px 16px 8px 16px;
+            margin: 0px;
+        }
+
+        a {
+            color: #4F80AE;
+            text-decoration: none;
+        }
+
+
+        /* Cначала обозначаем стили для IE8 и более старых версий
+        т.е. здесь мы немного облагораживаем стандартный чекбокс. */
+        [type="checkbox"] {
+            vertical-align: top;
+            margin: 0 3px 0 0;
+            width: 17px;
+            height: 17px;
+        }
+
+        /* Это для всех браузеров, кроме совсем старых, которые не поддерживают
+        селекторы с плюсом. Показываем, что label кликабелен. */
+        [type="checkbox"] + label {
+            cursor: pointer;
+        }
+
+        /* Далее идет оформление чекбокса в современных браузерах, а также IE9 и выше.
+        Благодаря тому, что старые браузеры не поддерживают селекторы :not и :checked,
+        в них все нижеследующие стили не сработают. */
+
+        /* Прячем оригинальный чекбокс. */
+        [type="checkbox"]:not(checked) {
+            position: absolute;
+            opacity: 0;
+        }
+
+        [type="checkbox"]:not(checked) + label {
+            position: relative; /* будем позиционировать псевдочекбокс относительно label */
+            padding: 0 50px 0 0; /* оставляем справа от label место под псевдочекбокс */
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Оформление первой части чекбокса в выключенном состоянии (фон). */
+        [type="checkbox"]:not(checked) + label:before {
+            content: '';
+            position: absolute;
+            top: 3px;
+            right: 0px;
+            width: 35px;
+            height: 12px;
+            border-radius: 13px;
+            background: #CDD1DA;
+        }
+
+        /* Оформление второй части чекбокса в выключенном состоянии (переключатель). */
+        [type="checkbox"]:not(checked) + label:after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            right: 13px;
+            width: 22px;
+            height: 22px;
+            border-radius: 22px;
+            background: #FFF;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, .3);
+            transition: all .2s;
+        }
+
+        /* Меняем фон чекбокса, когда он включен. */
+        [type="checkbox"]:checked + label:before {
+            background: #CDE0EE;
+        }
+
+        /* Сдвигаем переключатель чекбокса, когда он включен. */
+        [type="checkbox"]:checked + label:after {
+            right: 0px;
+            background: #4D7FB2;
+        }
+
+        [type="checkbox"], label {
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        }
+
+        [disabled], [disabled] + label {
+            opacity: 0.5
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        /** dark **/
+        .dark {
+            background: #111;
+            color: #eee;
+        }
+
+        .dark .section {
+            background: #333;
+            box-shadow: 1px 0px 5px -3px #000;
+        }
+
+        .dark .block + .block {
+            border-top: 1px solid #222;
+        }
+
+        .w50p {
+            width: 49%;
+            display: inline-block;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        *
+        .p6 {
+            padding: 12px 6px;
+            border: 0px;
+            background: #fff;
+            outline: 0px;
+            border-bottom: 1px solid #ECECEC;
+        }
+
+        .p6:focus {
+            box-shadow: inset 0px -2px #4F80AE;
+        }
+
+        #key {
+            width: 40%;
+        }
+
+        #value {
+            width: 40%;
+        }
+
+        #send {
+            width: 10%;
+            background: #4F80AE;
+            color: white;
+        }
+    </style>
+    <script>
+        var access_token = "", data = {};
+
+        function rpost(method, body) {
+            var r = new XMLHttpRequest();
+            r.open("POST", "/method/" + method, true);
+            var data = Object.keys(body).map(function (k) {
+                return k + "=" + encodeURIComponent(body[k]);
+            }).join("&");
+            r.send("&access_token=" + access_token + "&" + data);
+            r.onload = function () {
+                if (r.response !== "OK") {
+                    show_debug.outerHTML = r.response;
+                    loadValues();
+                }
+            };
+            return r;
+        }
+
+        function save(data) {
+            var r = new XMLHttpRequest();
+            r.open("POST", "/method/storage.set", true);
+            r.send("&access_token=" + access_token + "&key=reapi&value=" + encodeURIComponent(JSON.stringify(data)));
+            return r;
+        }
+
+        function onSwith(el) {
+            if (el.disabled) return false;
+            data[el.id] = el.checked ? 1 : 0;
+            if (el.getAttribute("sub")) setDisable(el, el.getAttribute("sub").split(";"));
+            save(data);
+        }
+
+        function loadValues() {
+            [].map.call(document.querySelectorAll('[type="checkbox"]'), function (el) {
+                el.checked = data[el.id];
+                if (el.getAttribute("sub")) setDisable(el, el.getAttribute("sub").split(";"));
+                el.onchange = onSwith.bind(el, el);
+            });
+        }
+
+        window.addEventListener("load", function () {
+            access_token = location.hash.substr(1);
+            if (!access_token) return;
+            var r = new XMLHttpRequest();
+            r.open("GET", "/settings/get?" + access_token, true);
+            r.onload = function () {
+                data = JSON.parse(r.response);
+                users.textContent = "Сейчас с ReApi: " + data.users;
+                delete data.users;
+                show_debug.onclick = rpost.bind(this, "cmd", {message: "show_debug"});
+                loadValues();
+                document.body.removeAttribute("disabled");
+            };
+            r.onerror = function (e) {
+                alert("Ошибка загрузки настроек: " + location.hash);
+            };
+            r.send();
+        });
+
+        function setDisable(el, ids) {
+            ids.map(function (id) {
+                if (el.checked) {
+                    document.getElementById(id).removeAttribute("disabled");
+                } else {
+                    document.getElementById(id).setAttribute("disabled", "1");
+                }
+            });
+        }
+    </script>
+</head>
+<body disabled>
+<div class="section">
+    <h1>Главное</h1>
+    <div class="block"><input type="checkbox" id="aread"/><label for="aread">Нечиталка</label></div>
+    <div class="block"><input type="checkbox" id="atyping"/><label for="atyping">Антитайпинг</label></div>
+    <div class="block"><input type="checkbox" id="voice2text"/><label for="voice2text">Распознавание голосовых</label>
+    </div>
+    <div class="block"><input type="checkbox" id="qsearch"/><label for="qsearch">Быстрые вложения</label></div>
+    <div class="block"><input type="checkbox" id="longpoll" sub="crypto;slinks"/><label for="longpoll">LongPoll
+        ReApi</label></div>
+    <div class="block"><input type="checkbox" disabled="longpoll" id="crypto"/><label for="crypto">Шифрование</label>
+    </div>
+    <div class="block"><input type="checkbox" disabled="longpoll" id="slinks"/><label for="slinks">Содержимое
+        ссылок</label></div>
+</div>
+<div class="section">
+    <h1>Разное</h1>
+    <div class="block"><input type="checkbox" id="graffiti"/><label for="graffiti">Наборы граффити</label></div>
+    <div class="block"><input type="checkbox" id="doc_keys"/><label for="doc_keys">Подсказки документов</label></div>
+    <div class="block"><input type="checkbox" id="custom_keywords"/><label for="custom_keywords">Дополнительные
+        подсказки стикеров</label></div>
+    <div class="block"><input type="checkbox" id="hide_stories"/><label for="hide_stories">Скрыть истории</label></div>
+</div>
+<div class="section">
+    <h1>О проекте</h1>
+    <div class="block">
+        ReApi - Модифицированный API ВКонтакте, добавляющий стикеры, нечиталку и прочие фичи не модифицируя сам
+        клиент.<br>
+        <span id="users"></span>
+    </div>
+    <div class="block" style="text-align:center;"><a target="_blank" href="http://vk.com/club150512579">Перейти в
+        группу</a></div>
+</div>
+<div class="section">
+    <h1>Отладка</h1>
+    <div class="block" id="show_debug" style="text-align:center;">Показать</div>
+</div>
+</body>
+</html>

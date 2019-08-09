@@ -1,0 +1,8 @@
+{
+  "server": {
+    "port": 103
+  },
+  "endpoint": "https://api.flyink.ru/",
+  "tts_key": "d88986a3-b793-4536-a124-fd800a4e6e5c",
+  "vks": ""
+}

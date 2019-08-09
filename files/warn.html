@@ -1,0 +1,21 @@
+<html>
+<head>
+    <title>Настройки ReApi</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="format-detection" content="telephone=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+</head>
+<body>
+<br>
+<center>
+    <h2 style="color:#333;" id="warn">Загрузка...</h2>
+    <script>
+        if (top !== window) {
+            document.getElementById("warn").textContent = "OK";
+        } else {
+            document.getElementById("warn").textContent = location.hash.substr(1);
+        }
+    </script>
+</center>
+</body>
+</html>

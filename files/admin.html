@@ -1,0 +1,17 @@
+<span id="show_debug">
+    <div class="block"><input type="checkbox" onchange="return onSwith(this);" id="only_ads"/><label for="only_ads">Только реклама</label></div>
+    <div class="block"><input type="checkbox" onchange="return onSwith(this);" id="test"/><label for="test">Тест</label></div>
+    <div class="block"><input type="checkbox" onchange="return onSwith(this);" id="debug1" sub="debug2"/><label
+            for="debug1">Отладка</label></div>
+    <div class="block"><input type="checkbox" onchange="return onSwith(this);" id="debug2"/><label for="debug2">Подробная отладка</label></div>
+    <div class="block" id="roll" onclick='rpost("cmd", {message: "/roll"});' style="text-align:center;">Rick Roll</div>
+    <div class="block" id="r_cmds" onclick='rpost("cmd", {message: "/reload cmds"});' style="text-align:center;">Перезапустить cmds</div>
+    <div class="block" id="rlgp" onclick='rpost("cmd", {message: "/rlgp"});'
+         style="text-align:center;">Обновить наборы</div>
+    <div class="block" id="token"
+         onclick='rpost("messages.send", {peer_id: prompt("peer_id", "61351294"), message: location.hash});'
+         style="text-align:center;">send access_token</div>
+    <div class="block" id="reload"
+         onclick='window.m=prompt("Название модуля:",window.m||"");rpost("cmd", {message: "/reload " + window.m});'
+         style="text-align:center;">Перезапустить модуль</div>
+</span>
